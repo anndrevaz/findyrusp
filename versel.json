@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/turmas", "destination": "/turmas.html" },
+    { "source": "/turma", "destination": "/turma.html" }
+  ]
+}
