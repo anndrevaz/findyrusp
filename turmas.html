@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinderUSP – Turmas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
+
+    header {
+      background: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    }
+    .logo a { font-size: 22px; font-weight: 700; color: #e85d3d !important; text-decoration: none !important; }
+    .user-info { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555; }
+    .user-info img { width: 32px; height: 32px; border-radius: 50%; }
+    .btn-sair { background: none; border: 1px solid #ddd; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; color: #888; }
+    .btn-login { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 14px; }
+
+    .container { max-width: 600px; margin: 32px auto; padding: 0 16px; }
+
+    .instituicao-header { margin-bottom: 24px; }
+    .instituicao-header h1 { font-size: 22px; color: #222; }
+    .instituicao-header p { font-size: 13px; color: #888; margin-top: 4px; }
+
+    .busca input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+    .busca input:focus { border-color: #e85d3d; }
+
+    .anos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .ano-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid #ddd;
+      background: white;
+      font-size: 13px;
+      cursor: pointer;
+      color: #555;
+      transition: all 0.2s;
+    }
+    .ano-btn.ativo { background: #e85d3d; color: white; border-color: #e85d3d; }
+
+    .secao-titulo { font-size: 13px; font-weight: 600; color: #aaa; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .turma-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .turma-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+    .turma-card h3 { font-size: 16px; color: #222; margin-bottom: 4px; }
+    .turma-card .meta { font-size: 12px; color: #aaa; margin-bottom: 12px; }
+    .avatares { display: flex; }
+    .avatares img {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-right: -8px;
+      object-fit: cover;
+    }
+    .mais-membros {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      border: 2px solid white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: #888;
+    }
+
+    .btn-criar {
+      width: 100%;
+      padding: 14px;
+      background: #e85d3d;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 24px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-criar:hover { background: #d44e2f; }
+
+    /* MODAL */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .overlay.ativo { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 480px;
+      margin: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .modal h2 { font-size: 20px; color: #222; margin-bottom: 24px; }
+    .campo { margin-bottom: 18px; }
+    .campo label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: 600; }
+    .campo input, .campo select, .campo textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      font-family: 'Segoe UI', sans-serif;
+      transition: border 0.2s;
+    }
+    .campo input:focus, .campo select:focus, .campo textarea:focus { border-color: #e85d3d; }
+    .campo textarea { resize: none; height: 90px; }
+    .contador { font-size: 12px; color: #aaa; text-align: right; margin-top: 4px; }
+    .modal-acoes { display: flex; gap: 12px; margin-top: 8px; }
+    .btn-cancelar {
+      flex: 1; padding: 12px;
+      background: white; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: 14px;
+      cursor: pointer; color: #888;
+    }
+    .btn-salvar {
+      flex: 2; padding: 12px;
+      background: #e85d3d; border: none;
+      border-radius: 8px; font-size: 14px;
+      cursor: pointer; color: white; font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-salvar:hover { background: #d44e2f; }
+    .btn-salvar:disabled { background: #ddd; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><a href="index.html">FinderUSP</a></div>
+    <div class="user-info" style="display:none;">
+      <img id="foto-usuario">
+      <span id="nome-usuario"></span>
+      <button class="btn-sair" onclick="sair()">Sair</button>
+    </div>
+    <button id="btn-login" class="btn-login" onclick="fazerLogin()" style="display:none;">
+      Faça login ou cadastre-se
+    </button>
+  </header>
+
+  <div class="container">
+    <div class="instituicao-header">
+      <h1>E se, em vez de procurar por nomes, você pudesse encontrar pessoas pela turma e pelo ano em que estudaram com você?</h1>
+      <p>Estamos validando uma nova forma de reencontrar colegas da USP usando curso, ano e turma, sem precisar lembrar o nome das pessoas.</p>
+    </div>
+
+    <div class="busca">
+      <input type="text" placeholder="Pesquise por ano ou nome da turma" oninput="filtrar(this.value)">
+    </div>
+
+    <div class="anos" id="filtros-ano"></div>
+
+    <div class="secao-titulo" id="secao-titulo">Todas as turmas</div>
+    <div id="lista-turmas"></div>
+
+    <button class="btn-criar" id="btn-criar" onclick="criarTurma()">
+      Faça login ou cadastre-se para criar uma turma
+    </button>
+  </div>
+
+  <!-- MODAL CRIAR TURMA -->
+  <div class="overlay" id="overlay" onclick="fecharModalFora(event)">
+    <div class="modal">
+      <h2>Criar nova turma</h2>
+
+      <div class="campo">
+        <label>Nome da turma</label>
+        <input type="text" id="input-nome" placeholder="Ex: Turma 3B noite, sala 101">
+      </div>
+
+      <div class="campo">
+        <label>Ano</label>
+        <select id="input-ano"></select>
+      </div>
+
+      <div class="campo">
+        <label>Descrição</label>
+        <textarea id="input-descricao" placeholder="Conte um pouco sobre essa turma..." maxlength="280" oninput="atualizarContador()"></textarea>
+        <div class="contador"><span id="contador">0</span>/280</div>
+      </div>
+
+      <div class="modal-acoes">
+        <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-salvar" id="btn-salvar" onclick="salvarTurma()">Criar turma</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAL3-YfaBX_cepyIfkxfDhraLfNOz02cTA",
+      authDomain: "findlyclub.firebaseapp.com",
+      projectId: "findlyclub",
+      storageBucket: "findlyclub.firebasestorage.app",
+      messagingSenderId: "861156112470",
+      appId: "1:861156112470:web:103417470ae743c8f523f7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let todasTurmas = [];
+    let usuarioAtual = null;
+
+    // Popular select de anos
+    const select = document.getElementById("input-ano");
+    for (let ano = 2025; ano >= 1970; ano--) {
+      const opt = document.createElement("option");
+      opt.value = ano;
+      opt.textContent = ano;
+      select.appendChild(opt);
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      usuarioAtual = user;
+      const btnCriar = document.getElementById("btn-criar");
+      if (user) {
+        btnCriar.textContent = "+ Criar nova turma";
+        document.getElementById("foto-usuario").src = user.photoURL;
+        document.getElementById("nome-usuario").textContent = user.displayName;
+        document.querySelector(".user-info").style.display = "flex";
+        document.getElementById("btn-login").style.display = "none";
+      } else {
+        btnCriar.textContent = "Faça login ou cadastre-se para criar uma turma";
+        document.querySelector(".user-info").style.display = "none";
+        document.getElementById("btn-login").style.display = "block";
+      }
+      await carregarTurmas();
+    });
+
+    async function carregarTurmas() {
+      const snapshot = await getDocs(collection(db, "turmas"));
+      todasTurmas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderAnos();
+      renderTurmas(todasTurmas);
+    }
+
+    function renderAnos() {
+      const anos = [...new Set(todasTurmas.map(t => t.ano))].sort((a,b) => b - a);
+      const container = document.getElementById("filtros-ano");
+      container.innerHTML = '';
+      anos.forEach(ano => {
+        const btn = document.createElement("button");
+        btn.className = "ano-btn";
+        btn.textContent = ano;
+        btn.onclick = () => filtrarPorAno(ano, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function renderTurmas(turmas) {
+      const lista = document.getElementById("lista-turmas");
+      lista.innerHTML = '';
+      if (turmas.length === 0) {
+        lista.innerHTML = '<p style="color:#aaa;text-align:center;padding:32px 0">Nenhuma turma encontrada.</p>';
+        return;
+      }
+      turmas.forEach(turma => {
+        const card = document.createElement("div");
+        card.className = "turma-card";
+        card.onclick = () => { window.location.href = `/turma?id=${turma.id}`; };
+        const avatares = (turma.membros || []).slice(0, 5).map(m =>
+          `<img src="${m.foto}" title="${m.nome}">`
+        ).join('');
+        const extras = (turma.membros || []).length > 5
+          ? `<div class="mais-membros">+${turma.membros.length - 5}</div>` : '';
+        card.innerHTML = `
+          <h3>${turma.nome}</h3>
+          <div class="meta">Criado por: ${turma.criadoPor} · Em: ${turma.criadoEm}</div>
+          <div class="avatares">${avatares}${extras}</div>
+        `;
+        lista.appendChild(card);
+      });
+    }
+
+    window.filtrar = (texto) => {
+      document.querySelectorAll(".ano-btn").forEach(b => b.classList.remove("ativo"));
+      document.getElementById("secao-titulo").textContent = "Todas as turmas";
+      const filtradas = todasTurmas.filter(t =>
+        t.nome.toLowerCase().includes(texto.toLowerCase()) ||
+        String(t.ano).includes(texto)
+      );
+      renderTurmas(filtradas);
+    };
+
+    window.filtrarPorAno = (ano, btn) => {
+      document.querySelectorAll(".ano-btn").forEach(b => b.classList.remove("ativo"));
+      btn.classList.add("ativo");
+      document.getElementById("secao-titulo").textContent = `Turmas de ${ano}`;
+      renderTurmas(todasTurmas.filter(t => t.ano === ano));
+    };
+
+    window.fazerLogin = async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } catch (erro) {
+        console.error(erro);
+      }
+    };
+
+    window.criarTurma = async () => {
+      if (!usuarioAtual) {
+        try {
+          const provider = new GoogleAuthProvider();
+          await signInWithPopup(auth, provider);
+        } catch (erro) {
+          console.error(erro);
+          return;
+        }
+      }
+      abrirModal();
+    };
+
+    window.abrirModal = () => {
+      document.getElementById("overlay").classList.add("ativo");
+    };
+
+    window.fecharModal = () => {
+      document.getElementById("overlay").classList.remove("ativo");
+      document.getElementById("input-nome").value = '';
+      document.getElementById("input-descricao").value = '';
+      document.getElementById("contador").textContent = '0';
+    };
+
+    window.fecharModalFora = (e) => {
+      if (e.target.id === "overlay") fecharModal();
+    };
+
+    window.atualizarContador = () => {
+      const val = document.getElementById("input-descricao").value.length;
+      document.getElementById("contador").textContent = val;
+    };
+
+    window.salvarTurma = async () => {
+      const nome = document.getElementById("input-nome").value.trim();
+      const ano = parseInt(document.getElementById("input-ano").value);
+      const descricao = document.getElementById("input-descricao").value.trim();
+
+      if (!nome) { alert("Coloca um nome pra turma."); return; }
+
+      const btn = document.getElementById("btn-salvar");
+      btn.disabled = true;
+      btn.textContent = "Salvando...";
+
+      await addDoc(collection(db, "turmas"), {
+        nome,
+        ano,
+        descricao,
+        criadoPor: usuarioAtual.displayName,
+        criadoEm: new Date().toLocaleDateString("pt-BR"),
+        membros: [{
+          uid: usuarioAtual.uid,
+          nome: usuarioAtual.displayName,
+          foto: usuarioAtual.photoURL
+        }]
+      });
+
+      btn.disabled = false;
+      btn.textContent = "Criar turma";
+      fecharModal();
+      await carregarTurmas();
+    };
+
+    window.sair = () => signOut(auth).then(() => window.location.href = "index.html");
+  </script>
+
+</body>
+</html>

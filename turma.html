@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinderUSP – Turma</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
+
+    header {
+      background: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    }
+    .logo { font-size: 22px; font-weight: 700; color: #e85d3d; }
+    .btn-voltar {
+      background: none; border: 1px solid #ddd;
+      border-radius: 6px; padding: 6px 14px;
+      cursor: pointer; font-size: 13px; color: #888;
+    }
+
+    .container { max-width: 600px; margin: 32px auto; padding: 0 16px; }
+
+    .turma-header {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
+    .turma-header h1 { font-size: 20px; color: #222; margin-bottom: 4px; }
+    .turma-header .meta { font-size: 12px; color: #aaa; margin-bottom: 12px; }
+    .turma-header .descricao { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 16px; }
+    .turma-header .total { font-size: 13px; color: #888; }
+    .turma-header .total span { font-weight: 700; color: #222; }
+
+    .btn-entrar {
+      width: 100%; padding: 14px;
+      background: #e85d3d; color: white;
+      border: none; border-radius: 10px;
+      font-size: 15px; cursor: pointer;
+      font-weight: 600; margin-top: 16px;
+      transition: background 0.2s;
+    }
+    .btn-entrar:hover { background: #d44e2f; }
+    .btn-membro {
+      width: 100%; padding: 14px;
+      background: #f0f0f0; color: #888;
+      border: none; border-radius: 10px;
+      font-size: 15px; cursor: default;
+      font-weight: 600; margin-top: 16px;
+    }
+
+    .secao-titulo {
+      font-size: 13px; font-weight: 600;
+      color: #aaa; margin-bottom: 12px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .grade-membros {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin-bottom: 24px;
+    }
+    .membro-card {
+      background: white; border-radius: 12px;
+      padding: 16px 8px; text-align: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
+    .membro-card img {
+      width: 56px; height: 56px;
+      border-radius: 50%; object-fit: cover; margin-bottom: 8px;
+    }
+    .membro-card .nome { font-size: 12px; color: #333; font-weight: 600; line-height: 1.3; }
+    .membro-card .redes { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+    .membro-card .redes a { font-size: 11px; color: #e85d3d; text-decoration: none; }
+
+    .borrado img { filter: blur(2px); }
+    .borrado .nome { filter: blur(4px); user-select: none; }
+    .borrado .redes { display: none; }
+
+    .aviso-entrar {
+      background: white; border-radius: 12px;
+      padding: 24px; text-align: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+    }
+    .aviso-entrar p { color: #888; font-size: 14px; line-height: 1.6; }
+    .aviso-entrar strong { color: #222; }
+
+    .pendente-aviso {
+      background: #fff8f6; border: 1px solid #fdd;
+      border-radius: 10px; padding: 16px;
+      text-align: center; font-size: 14px;
+      color: #e85d3d; margin-top: 16px;
+    }
+
+    /* MODAIS */
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 100;
+      justify-content: center; align-items: center;
+    }
+    .overlay.ativo { display: flex; }
+    .modal {
+      background: white; border-radius: 16px;
+      padding: 32px; width: 100%; max-width: 480px;
+      margin: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .modal h2 { font-size: 18px; color: #222; margin-bottom: 8px; }
+    .modal p.subtitulo { font-size: 14px; color: #888; margin-bottom: 20px; line-height: 1.5; }
+
+    .regras-box {
+      background: #fff8f6; border: 1px solid #fdd;
+      border-radius: 8px; padding: 16px; margin-bottom: 24px;
+    }
+    .regras-box p { font-size: 13px; color: #888; line-height: 2; }
+    .regras-box p span { color: #222; font-weight: 600; }
+
+    .campo { margin-bottom: 18px; }
+    .campo label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: 600; }
+    .campo textarea {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid #ddd; border-radius: 8px;
+      font-size: 14px; outline: none;
+      font-family: 'Segoe UI', sans-serif;
+      resize: none; height: 90px; transition: border 0.2s;
+    }
+    .campo textarea:focus { border-color: #e85d3d; }
+
+    .modal-acoes { display: flex; gap: 12px; margin-top: 8px; }
+    .btn-cancelar {
+      flex: 1; padding: 12px;
+      background: white; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: 14px;
+      cursor: pointer; color: #888;
+    }
+    .btn-confirmar {
+      flex: 2; padding: 12px;
+      background: #e85d3d; border: none;
+      border-radius: 8px; font-size: 14px;
+      cursor: pointer; color: white; font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-confirmar:hover { background: #d44e2f; }
+    .btn-confirmar:disabled { background: #ddd; cursor: not-allowed; }
+
+    /* Modal 3 — confirmação */
+    .modal-sucesso { text-align: center; }
+    .modal-sucesso .icone { font-size: 40px; margin-bottom: 16px; }
+    .modal-sucesso h2 { margin-bottom: 8px; }
+    .modal-sucesso p { font-size: 14px; color: #888; line-height: 1.6; margin-bottom: 24px; }
+    .btn-fechar-sucesso {
+      width: 100%; padding: 12px;
+      background: white; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: 14px;
+      cursor: pointer; color: #888; margin-bottom: 16px;
+    }
+    .barra-progresso {
+      width: 100%; height: 4px;
+      background: #f0f0f0; border-radius: 4px; overflow: hidden;
+    }
+    .barra-progresso-inner {
+      height: 100%; background: #e85d3d;
+      border-radius: 4px;
+      animation: progresso 5s linear forwards;
+    }
+    @keyframes progresso {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">FinderUSP</div>
+    <button class="btn-voltar" onclick="window.location.href='/turmas'">← Voltar</button>
+  </header>
+
+  <div class="container">
+    <div class="turma-header" id="turma-header">
+      <div style="color:#aaa;font-size:14px">Carregando...</div>
+    </div>
+    <div id="conteudo-membros"></div>
+  </div>
+
+  <!-- MODAL 1 — Regras -->
+  <div class="overlay" id="modal1">
+    <div class="modal">
+      <h2 id="modal1-titulo">Entrar na turma</h2>
+      <p class="subtitulo">Antes de confirmar, tem algumas coisas que você precisa saber.</p>
+      <div class="regras-box">
+        <p>
+          <span>1.</span> Sua confirmação não poderá ser cancelada.<br>
+          <span>2.</span> Você vai precisar se apresentar pra turma.<br>
+          <span>3.</span> Alguém da turma precisará aprovar sua entrada (por isso, <b>capriche na apresentação.</b>).<br>
+          <span>4.</span> Após entrar, você não consegue mais sair da turma.
+        </p>
+      </div>
+      <div class="modal-acoes">
+        <button class="btn-cancelar" onclick="fecharTudo()">Desistir</button>
+        <button class="btn-confirmar" onclick="irParaModal2()">Confirmo que sou parte desta turma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2 — Apresentação -->
+  <div class="overlay" id="modal2">
+    <div class="modal">
+      <h2>Apresente-se</h2>
+      <p class="subtitulo">Isso é importante pra ser aprovado pelo admin.</p>
+      <div class="campo">
+        <label>Escreva uma breve descrição sobre você</label>
+        <textarea id="input-apresentacao" placeholder="Ex: Estudei na turma X, curso de Y, me chamo Z..."></textarea>
+      </div>
+      <div class="modal-acoes">
+        <button class="btn-cancelar" onclick="fecharTudo()">Desistir</button>
+        <button class="btn-confirmar" id="btn-confirmar" onclick="pedirEntrada()">Pedir pra fazer parte da turma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3 — Sucesso -->
+  <div class="overlay" id="modal3">
+    <div class="modal modal-sucesso">
+      <div class="icone">🎉</div>
+      <h2>Solicitação enviada!</h2>
+      <p id="modal3-texto">Sua solicitação foi enviada. Agora é só aguardar o admin aprovar sua entrada.</p>
+      <button class="btn-fechar-sucesso" onclick="fecharTudo()">Fechar</button>
+      <div class="barra-progresso">
+        <div class="barra-progresso-inner" id="barra"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { iniciarAprovacoes, renderizarBanner } from "./aprovacoes.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAL3-YfaBX_cepyIfkxfDhraLfNOz02cTA",
+      authDomain: "findlyclub.firebaseapp.com",
+      projectId: "findlyclub",
+      storageBucket: "findlyclub.firebasestorage.app",
+      messagingSenderId: "861156112470",
+      appId: "1:861156112470:web:103417470ae743c8f523f7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const params = new URLSearchParams(window.location.search);
+    const turmaId = params.get("id");
+
+    let usuarioAtual = null;
+    let turmaData = null;
+    let timerSucesso = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = "/"; return; }
+      usuarioAtual = user;
+      iniciarAprovacoes(db, usuarioAtual);
+      await carregarTurma();
+    });
+
+    async function carregarTurma() {
+      const ref = doc(db, "turmas", turmaId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) { window.location.href = "/turmas"; return; }
+      turmaData = { id: snap.id, ...snap.data() };
+      renderTurma();
+    }
+
+    async function renderTurma() {
+      const membros = turmaData.membros || [];
+      const pendentes = turmaData.pendentes || [];
+      const ehMembro = membros.some(m => m.uid === usuarioAtual.uid);
+      const ehPendente = pendentes.some(p => p.uid === usuarioAtual.uid);
+
+      if (ehMembro) {
+        await renderizarBanner(document.querySelector(".container"), turmaId);
+      }
+
+      document.getElementById("turma-header").innerHTML = `
+        <h1>${turmaData.nome}</h1>
+        <div class="meta">Criado por: ${turmaData.criadoPor} · ${turmaData.ano}</div>
+        ${turmaData.descricao ? `<div class="descricao">${turmaData.descricao}</div>` : ''}
+        <div class="total"><span>${membros.length}</span> ${membros.length === 1 ? 'membro' : 'membros'}</div>
+        ${ehMembro
+          ? `<div class="btn-membro">✓ Você já faz parte desta turma</div>`
+          : ehPendente
+          ? `<div class="pendente-aviso">⏳ Solicitação enviada. Aguardando aprovação.</div>`
+          : `<button class="btn-entrar" onclick="abrirModal1()">Sou parte desta turma</button>`
+        }
+      `;
+
+      const conteudo = document.getElementById("conteudo-membros");
+      if (!ehMembro) {
+        conteudo.innerHTML = `
+          <div class="aviso-entrar">
+            <p>👀 Há <strong>${membros.length} ${membros.length === 1 ? 'pessoa' : 'pessoas'}</strong> nesta turma.<br>
+            Entre para ver os nomes completos e redes sociais.</p>
+          </div>
+          <div class="secao-titulo">Membros</div>
+          <div class="grade-membros">
+            ${membros.map(m => `
+              <div class="membro-card borrado">
+                <img src="${m.foto}" alt="">
+                <div class="nome">${m.nome}</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        conteudo.innerHTML = `
+          <div class="secao-titulo">Membros</div>
+          <div class="grade-membros">
+            ${membros.map(m => `
+              <div class="membro-card">
+                <img src="${m.foto}" alt="">
+                <div class="nome">${m.nome}</div>
+                <div class="redes">
+                  ${m.instagram ? `<a href="https://instagram.com/${m.instagram}" target="_blank">Instagram</a>` : ''}
+                  ${m.linkedin ? `<a href="${m.linkedin}" target="_blank">LinkedIn</a>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    window.abrirModal1 = () => {
+      document.getElementById("modal1-titulo").textContent = `Entrar em "${turmaData.nome}"`;
+      document.getElementById("modal1").classList.add("ativo");
+    };
+
+    window.irParaModal2 = () => {
+      document.getElementById("modal1").classList.remove("ativo");
+      document.getElementById("modal2").classList.add("ativo");
+    };
+
+    window.pedirEntrada = async () => {
+      const apresentacao = document.getElementById("input-apresentacao").value.trim();
+      if (!apresentacao) { alert("Escreve uma apresentação."); return; }
+
+      const btn = document.getElementById("btn-confirmar");
+      btn.disabled = true;
+      btn.textContent = "Enviando...";
+
+      const ref = doc(db, "turmas", turmaId);
+      await updateDoc(ref, {
+        pendentes: arrayUnion({
+          uid: usuarioAtual.uid,
+          nome: usuarioAtual.displayName,
+          foto: usuarioAtual.photoURL,
+          apresentacao
+        })
+      });
+
+      btn.disabled = false;
+      btn.textContent = "Pedir pra fazer parte da turma";
+
+      document.getElementById("modal2").classList.remove("ativo");
+      document.getElementById("modal3-texto").textContent =
+        `Sua solicitação pra entrar em "${turmaData.nome}" foi enviada. Agora é só aguardar o admin aprovar.`;
+      document.getElementById("modal3").classList.add("ativo");
+
+      // Reinicia a animação da barra
+      const barra = document.getElementById("barra");
+      barra.style.animation = "none";
+      barra.offsetHeight; // força reflow
+      barra.style.animation = "progresso 5s linear forwards";
+
+      timerSucesso = setTimeout(() => {
+        fecharTudo();
+      }, 5000);
+
+      await carregarTurma();
+    };
+
+    window.fecharTudo = () => {
+      document.getElementById("modal1").classList.remove("ativo");
+      document.getElementById("modal2").classList.remove("ativo");
+      document.getElementById("modal3").classList.remove("ativo");
+      document.getElementById("input-apresentacao").value = '';
+      if (timerSucesso) clearTimeout(timerSucesso);
+    };
+  </script>
+
+</body>
+</html>

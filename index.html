@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinderUSP</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background: white;
+      border-radius: 20px;
+      padding: 48px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 40px;
+      font-weight: 700;
+      color: #e85d3d;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 32px;
+      line-height: 1.2;
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    .descricao {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #666;
+      margin-bottom: 36px;
+    }
+
+    .btn-principal {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #e85d3d;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-principal:hover {
+      background: #d44e2f;
+    }
+
+    /* MODAL */
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      z-index: 999;
+    }
+
+    .overlay.ativo {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    .modal h2 {
+      font-size: 22px;
+      color: #222;
+      margin-bottom: 16px;
+    }
+
+    .modal p {
+      color: #666;
+      line-height: 1.7;
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+
+    .btn-continuar {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #e85d3d;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-continuar:hover {
+      background: #d44e2f;
+    }
+
+    .btn-cancelar {
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-cancelar:hover {
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 40px 24px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+    .btn-secundario {
+      width: 100%;
+      padding: 5px 20px;
+      margin: 20px 0 12px;
+      border: 1px solid #eb5d3d;
+      border-radius: 12px;
+      background: transparent;
+      color: #eb5d3d;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secundario:hover {
+      background: rgba(235, 93, 61, 0.08);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="logo">FinderUSP <p style="font-weight: 300;font-size: 14px;">Versão PoC</p></div>
+
+    <h1>
+      Será que é possível encontrar ex-colegas da USP mesmo sem lembrar o nome deles?
+    </h1>
+  
+    <p class="descricao">
+      Você talvez não lembre o nome de quem estudou com você. Mas provavelmente lembra do <b>curso</b>, da <b>turma</b> e do <b>ano</b>.
+      <br>
+      Estamos testando uma nova forma de reencontrar essas pessoas usando justamente essas informações.
+    </p>
+
+    <button class="btn-principal" onclick="abrirModal()">
+      Clique aqui e explore as turmas
+    </button>
+
+    <button class="btn-secundario" onclick="compartilharIdeia()">
+      📢 Compartilhe essa ideia
+    </button>
+
+  </div>
+
+  <div class="overlay" id="overlay">
+
+    <div class="modal">
+
+      <h2>Antes de continuar</h2>
+
+      <p>
+        O <b>FinderUSP</b> está sendo construído exclusivamente para alunos e ex-alunos da USP.
+        <br><br>
+        O objetivo é nos ajudar a reencontrar colegas através das turmas.
+        <br><br>
+        Neste momento, apenas turmas relacionadas à USP podem ser criadas.
+      </p>
+
+      <button class="btn-continuar" onclick="continuar()">
+        Entendo, quero continuar
+      </button>
+
+      <button class="btn-cancelar" onclick="fecharModal()">
+        Cancelar
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function abrirModal() {
+      document.getElementById('overlay').classList.add('ativo');
+    }
+
+    function fecharModal() {
+      document.getElementById('overlay').classList.remove('ativo');
+    }
+
+    function continuar() {
+      window.location.href = '/turmas';
+    }
+
+    async function compartilharIdeia() {
+      const texto =
+        "Ajude a reunir sua turma da USP! Conheça o FinderUSP e participe do projeto.";
+
+      const url = window.location.origin;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "FinderUSP",
+            text: texto,
+            url: url
+          });
+        } catch (err) {
+          console.log("Compartilhamento cancelado");
+        }
+      } else {
+        navigator.clipboard.writeText(`${texto}\n${url}`);
+        alert("Link copiado para a área de transferência!");
+      }
+    }
+
+  </script>
+
+</body>
+</html>
