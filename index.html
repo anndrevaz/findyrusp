@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FinderUSP</title>
+  <title>FindyrUSP</title>
 
   <style>
     * {
@@ -174,7 +174,7 @@
 
   <div class="container">
 
-    <div class="logo">FinderUSP <p style="font-weight: 300;font-size: 14px;">Versão PoC</p></div>
+    <div class="logo">FindyrUSP <p style="font-weight: 300;font-size: 14px;">Versão PoC</p></div>
 
     <h1>
       Será que é possível encontrar ex-colegas da USP mesmo sem lembrar o nome deles?
@@ -203,7 +203,7 @@
       <h2>Antes de continuar</h2>
 
       <p>
-        O <b>FinderUSP</b> está sendo construído exclusivamente para alunos e ex-alunos da USP.
+        O <b>FindyrUSP</b> está sendo construído exclusivamente para alunos e ex-alunos da USP.
         <br><br>
         O objetivo é nos ajudar a reencontrar colegas através das turmas.
         <br><br>
@@ -238,14 +238,14 @@
 
     async function compartilharIdeia() {
       const texto =
-        "Ajude a reunir sua turma da USP! Conheça o FinderUSP e participe do projeto.";
+        "Ajude a reunir sua turma da USP! Conheça o FindyrUSP e participe do projeto.";
 
       const url = window.location.origin;
 
       if (navigator.share) {
         try {
           await navigator.share({
-            title: "FinderUSP",
+            title: "FindyrUSP",
             text: texto,
             url: url
           });
