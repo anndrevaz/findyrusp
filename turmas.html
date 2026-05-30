@@ -289,7 +289,14 @@
       });
     }
 
+    const TURMA_FIXADA_ID = 'XyLT2rGzV3ZmPapaa7DI';
+
     function renderTurmas(turmas) {
+      turmas = [...turmas].sort((a, b) => {
+        if (a.id === TURMA_FIXADA_ID) return -1;
+        if (b.id === TURMA_FIXADA_ID) return 1;
+        return 0;
+      });
       const lista = document.getElementById("lista-turmas");
       lista.innerHTML = '';
       if (turmas.length === 0) {

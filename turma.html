@@ -405,6 +405,8 @@
       await carregarTurma();
     };
 
+    window.addEventListener('membroAprovado', () => carregarTurma());
+
     window.fecharTudo = () => {
       document.getElementById("modal1").classList.remove("ativo");
       document.getElementById("modal2").classList.remove("ativo");
