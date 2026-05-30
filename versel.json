@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/turmas", "destination": "/turmas.html" },
-    { "source": "/turma", "destination": "/turma.html" },
-    { "source": "/", "destination": "/index.html" }
-  ],
-  "cleanUrls": true
-}
