@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FindyrUSP – Turma</title>
+  <title>FinderUSP – Turma</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
@@ -79,8 +79,7 @@
     .membro-card .redes { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
     .membro-card .redes a { font-size: 11px; color: #e85d3d; text-decoration: none; }
 
-    .borrado img { filter: blur(2px); }
-    .borrado .nome { filter: blur(4px); user-select: none; }
+    .borrado img { filter: blur(2px); margin-bottom: 0; }
     .borrado .redes { display: none; }
 
     .aviso-entrar {
@@ -177,7 +176,7 @@
 <body>
 
   <header>
-    <div class="logo">FindyrUSP</div>
+    <div class="logo">FinderUSP</div>
     <button class="btn-voltar" onclick="window.location.href='/turmas'">← Voltar</button>
   </header>
 
@@ -264,9 +263,8 @@
     let timerSucesso = null;
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.href = "/"; return; }
       usuarioAtual = user;
-      iniciarAprovacoes(db, usuarioAtual);
+      if (user) iniciarAprovacoes(db, usuarioAtual);
       await carregarTurma();
     });
 
@@ -281,8 +279,8 @@
     async function renderTurma() {
       const membros = turmaData.membros || [];
       const pendentes = turmaData.pendentes || [];
-      const ehMembro = membros.some(m => m.uid === usuarioAtual.uid);
-      const ehPendente = pendentes.some(p => p.uid === usuarioAtual.uid);
+      const ehMembro = usuarioAtual ? membros.some(m => m.uid === usuarioAtual.uid) : false;
+      const ehPendente = usuarioAtual ? pendentes.some(p => p.uid === usuarioAtual.uid) : false;
 
       if (ehMembro) {
         await renderizarBanner(document.querySelector(".container"), turmaId);
@@ -297,7 +295,9 @@
           ? `<div class="btn-membro">✓ Você já faz parte desta turma</div>`
           : ehPendente
           ? `<div class="pendente-aviso">⏳ Solicitação enviada. Aguardando aprovação.</div>`
-          : `<button class="btn-entrar" onclick="abrirModal1()">Sou parte desta turma</button>`
+          : usuarioAtual
+          ? `<button class="btn-entrar" onclick="abrirModal1()">Sou parte desta turma</button>`
+          : `<button class="btn-entrar" onclick="fazerLoginETornar()">Faça login para fazer parte desta turma</button>`
         }
       `;
 
@@ -313,7 +313,6 @@
             ${membros.map(m => `
               <div class="membro-card borrado">
                 <img src="${m.foto}" alt="">
-                <div class="nome">${m.nome}</div>
               </div>
             `).join('')}
           </div>
@@ -336,6 +335,17 @@
         `;
       }
     }
+
+    window.fazerLoginETornar = async () => {
+      const { GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+      const provider = new GoogleAuthProvider();
+      try {
+        await signInWithPopup(auth, provider);
+        // onAuthStateChanged vai recarregar automaticamente
+      } catch (erro) {
+        console.error(erro);
+      }
+    };
 
     window.abrirModal1 = () => {
       document.getElementById("modal1-titulo").textContent = `Entrar em "${turmaData.nome}"`;
