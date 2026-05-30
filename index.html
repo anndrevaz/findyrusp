@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-S6XNB8CZNN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-S6XNB8CZNN");
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FinderUSP</title>
@@ -222,21 +230,57 @@
 
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    function abrirModal() {
-      document.getElementById('overlay').classList.add('ativo');
-    }
+    const firebaseConfig = {
+      apiKey: "AIzaSyAL3-YfaBX_cepyIfkxfDhraLfNOz02cTA",
+      authDomain: "findlyclub.firebaseapp.com",
+      projectId: "findlyclub",
+      storageBucket: "findlyclub.firebasestorage.app",
+      messagingSenderId: "861156112470",
+      appId: "1:861156112470:web:103417470ae743c8f523f7"
+    };
 
-    function fecharModal() {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let usuarioAtual = null;
+    let authPronto = false;
+
+    onAuthStateChanged(auth, (user) => {
+      usuarioAtual = user;
+      authPronto = true;
+    });
+
+    window.abrirModal = () => {
+      if (!authPronto) {
+        const intervalo = setInterval(() => {
+          if (authPronto) {
+            clearInterval(intervalo);
+            window.abrirModal();
+          }
+        }, 50);
+        setTimeout(() => clearInterval(intervalo), 1000);
+        return;
+      }
+      if (usuarioAtual) {
+        window.location.href = '/turmas';
+      } else {
+        document.getElementById('overlay').classList.add('ativo');
+      }
+    };
+
+    window.fecharModal = () => {
       document.getElementById('overlay').classList.remove('ativo');
-    }
+    };
 
-    function continuar() {
+    window.continuar = () => {
       window.location.href = '/turmas';
-    }
+    };
 
-    async function compartilharIdeia() {
+    window.compartilharIdeia = async () => {
       const texto =
         "Ajude a reunir sua turma da USP! Conheça o FinderUSP e participe do projeto.";
 
