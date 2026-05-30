@@ -199,7 +199,7 @@ window.aprovarMembro = async (turmaId, index, uid, nome, foto) => {
 
   if (pendente) {
     await updateDoc(ref, {
-      membros: arrayUnion({ uid: pendente.uid, nome: pendente.nome, foto: pendente.foto }),
+      membros: arrayUnion({ uid: pendente.uid, nome: pendente.nome, foto: pendente.foto, email: pendente.email }),
       pendentes: arrayRemove(pendente)
     });
   }
